@@ -1,0 +1,62 @@
+---
+title: "Untitled"
+author: "pdf"
+date: "2024-05-29"
+output: html_document
+---
+
+1.Data set: The thicknesses of three different types of table tennis rubbers were measured. I have created this data as a data frame in R
+
+```{r}
+rubber_data <- data.frame(
+  RubberType = factor(rep(c("Smooth", "PipsOut", "AntiSpin"), each = 6)),
+  Thickness = c(2.3, 2.2, 2.15, 2.1, 1.9, 2.0, 1.5, 1.6, 1.1, 1.8, 1.7, 1.4, 2.3, 2.00, 1.5, 2.1, 1.8, 1.5)
+)
+
+
+```
+
+
+
+2. Normality Test
+We check whether the data distributions of the groups are normal using the Shapiro-Wilk test
+
+```{r}
+shapiro_results <- lapply(split(rubber_data$Thickness, rubber_data$RubberType), shapiro.test)
+shapiro_results
+
+
+```
+3. Test of Homogeneity of Variances (Levene's Test)
+Levene's test checks whether the variances of the groups are homogeneous
+
+```{r}
+if (!require(car)) {
+  install.packages("car", dependencies = TRUE)
+  library(car)
+}
+
+levene_test <- leveneTest(Thickness ~ RubberType, data = rubber_data)
+levene_test
+
+```
+
+4. ANOVA Analysis
+A one-way ANOVA test is applied to analyze the differences between groups
+
+```{r}
+# ANOVA
+anova_model <- aov(Thickness ~ RubberType, data = rubber_data)
+summary(anova_model)
+
+
+```
+
+5.Post Hoc Tests
+```{r}
+# Tukey HSD
+tukey_test <- TukeyHSD(anova_model)
+tukey_test
+
+```
+
